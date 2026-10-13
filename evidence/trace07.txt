@@ -1,0 +1,15 @@
+$ Python · Base64 → XOR publicshadow → Base64
+
+LinkedIn:
+ET0wXAorPl4tHVYNESIwACU0PQc4M1oC
+XOR → aHR0cHM6Ly9zaWRlLWNoYW5u
+Base64 → https://side-chann
+
+Instagram:
+KiIVGQ0OJRE4VjkEPBgkGwogS1U=
+XOR → ZWwudmVyY2VsLmFwcC8=
+Base64 → el.vercel.app/
+
+Fragmento en 07.html:
+<p style="color: black;">
+FWT1FVkVSWV

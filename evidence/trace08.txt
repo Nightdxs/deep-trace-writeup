@@ -1,0 +1,15 @@
+$ python3 scripts/decode_texts.py
+$ Python · inspeccionar script.js y trace.txt
+
+Intercept: TkZQRksgUk9UTSA0MjAyIEVQTVNQIFFaIE5BUEdYTg==
+Base64: NFPFK ROTM 4202 EPMSP QZ NAPGXN
+Invertido: NXGPAN ZQ PSMPE 2024 MTOR KFPFN
+TRACE 08 -> ADVENT OF CYBER 2024 SIDE QUEST
+
+script.js:
+fetch(`trace.txt?cache=${Date.now()}`)
+
+trace.txt:
+9BQ1RJT05f
+
+Este registro no reconfirma la procedencia de la flag de THM.

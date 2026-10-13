@@ -1,0 +1,659 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Writeup de THE DEEP TRACE: diez etapas de OSINT, esteganografía, análisis de red y criptografía."><title>DEEP TRACE</title><style>
+:root{--bg:#100e12;--panel:#1b151b;--text:#eee5e7;--muted:#b2a3aa;--line:#3b2932;--accent:#ff777f}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.85 system-ui,Segoe UI,sans-serif}a{color:var(--accent)}header{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5vw;background:#100e12ed;position:sticky;top:0;z-index:4;backdrop-filter:blur(16px)}.brand{font-weight:850;letter-spacing:.12em;color:white;font-size:14px}.brand b{color:var(--accent)}.actions{display:flex;gap:20px;font-size:12px}.actions a{text-decoration:none;color:var(--muted)}#progress{position:fixed;top:69px;left:0;height:2px;background:var(--accent);z-index:5;width:0}.hero{max-width:1250px;margin:auto;padding:75px 35px 55px;position:relative;background:radial-gradient(ellipse at 85% 30%,#7a263a44,transparent 50%)}.eyebrow{color:var(--accent);font:12px monospace;letter-spacing:.2em}.hero h1{font-size:clamp(48px,7.5vw,92px);line-height:.98;letter-spacing:-.06em;color:white;margin:28px 0}.hero h1 span{color:var(--accent)}.hero p{max-width:590px;color:var(--muted);font-size:18px}.stats{display:flex;gap:45px;margin-top:35px}.stats strong{display:block;color:white;font:28px monospace}.stats span{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}.layout{display:grid;grid-template-columns:240px minmax(0,850px);gap:60px;max-width:1250px;margin:auto;padding:25px 35px 85px}aside{position:sticky;top:105px;align-self:start;font-size:12px;line-height:1.55;max-height:calc(100vh - 125px);overflow:auto}aside p{font:11px monospace;letter-spacing:.16em;color:var(--muted)}aside ul{list-style:none;padding:0}aside li{margin:14px 0}aside ul ul{display:none}aside a{text-decoration:none;color:var(--muted);display:block;border-left:2px solid transparent;padding-left:12px}aside a:hover,aside a.active{color:var(--accent);border-color:var(--accent)}article{min-width:0}article>p:first-child{font-size:12px;color:var(--muted)}h2{color:white;font-size:30px;line-height:1.25;letter-spacing:-.02em;border-top:1px solid var(--line);padding-top:35px;margin-top:65px}h3{color:white}p{margin:20px 0}blockquote{margin:25px 0;padding:12px 22px;background:#ff777f0a;border-left:3px solid var(--accent);color:#d7b5bf}blockquote p{margin:7px 0}pre{position:relative;background:#120d12;border:1px solid var(--line);border-radius:12px;padding:44px 22px 22px;overflow:auto;line-height:1.65;font-size:12px;color:#efd2d7}code{font-family:Consolas,monospace;overflow-wrap:anywhere}p code,li code,td code{color:#ffc0c5;background:#2a1c25;padding:2px 5px;border-radius:4px;font-size:.85em}pre code{font:inherit;overflow-wrap:normal}.copy{position:absolute;right:12px;top:10px;background:#2b1d26;border:1px solid #59343e;border-radius:5px;color:#d5bcc6;font:11px system-ui;padding:4px 10px;cursor:pointer}.copy:hover{color:var(--accent)}table{border-collapse:collapse;width:100%;display:block;overflow:auto;font-size:12px;margin:25px 0}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--accent);background:#241820}img{width:100%;height:auto;display:block;margin:30px auto;border:1px solid var(--line);border-radius:12px;cursor:zoom-in}img[src*=evidence-returned]{max-width:370px}strong{color:#fff4f6}footer{border-top:1px solid var(--line);padding:35px;text-align:center;font-size:12px;color:var(--muted)}.note{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;font-size:13px;color:var(--muted)}dialog{padding:15px;background:#1b1219;border:1px solid var(--line);border-radius:12px;max-width:95vw;max-height:95vh}dialog::backdrop{background:#000d}dialog img{max-height:80vh;object-fit:contain;max-width:85vw;margin:12px auto;cursor:default}dialog button{background:#492731;color:white;border:0;padding:8px 15px;border-radius:5px;cursor:pointer}.menu{display:none} @media(max-width:900px){.layout{grid-template-columns:1fr;gap:20px}aside{position:static;max-height:none}.toc{display:none}.toc.open{display:block}.menu{display:block;background:var(--panel);border:1px solid var(--line);padding:12px;width:100%;color:var(--accent);text-align:left;border-radius:8px}.hero{padding-top:45px}.stats{gap:25px}}@media(max-width:550px){.hero,.layout{padding-left:20px;padding-right:20px}.hero h1{font-size:53px}.actions{gap:12px}.actions a:first-child{display:none}h2{font-size:25px}body{font-size:15px}.stats strong{font-size:22px}}@media print{header,aside,.hero,.copy,footer,#progress{display:none}.layout{display:block;padding:0}body{background:white;color:black}h2,strong,h3{color:black}pre{white-space:pre-wrap;color:black;background:#eee}img,pre{break-inside:avoid}}
+.signature{max-width:850px;margin:0 auto 35px;padding:45px 25px;background:linear-gradient(130deg,#2b1420,#151015);border:1px solid var(--line);border-radius:14px}.signature span{font:11px monospace;letter-spacing:.22em;color:var(--accent)}.signature strong{display:block;font-size:clamp(38px,6vw,65px);letter-spacing:-.04em;margin:10px 0}.signature p{color:var(--muted);margin:0}.hero::after{content:"";position:absolute;right:35px;top:35px;width:85px;height:2px;background:var(--accent);box-shadow:0 8px 0 #ff777f44}.hero .stats{border-top:1px solid var(--line);padding-top:25px}.hero{padding-bottom:65px}article img{box-shadow:0 12px 40px #0004}article p:has(> em:only-child){font-size:12px;color:var(--muted);text-align:center;margin-top:-14px}article img[src*=instagram-poster]{max-width:440px}article img[src*=westminster-reference]{max-width:510px}h3{margin-top:42px;font-size:21px;border-left:3px solid var(--accent);padding-left:15px}h3+p{margin-top:16px}</style></head><body><header><div class="brand">DEEP <b>TRACE</b> / XSEC</div><nav class="actions"><a href="WRITEUP.md" download>Markdown</a><a href="#resumen">Leer investigación ↗</a></nav></header><div id="progress"></div><section class="hero"><div class="eyebrow">XSEC 2026 / WRITEUP DE INVESTIGACIÓN</div><h1>DEEP <span>TRACE</span></h1><p>Una fotografía, una señal de audio y nueve fragmentos. El recorrido completo de THE DEEP TRACE, documentado paso a paso.</p><div class="stats"><div><strong>10</strong><span>Etapas</span></div><div><strong>09</strong><span>Fragmentos utilizados</span></div><div><strong>OSINT</strong><span>Evidencia y análisis</span></div></div></section><main class="layout"><aside><button class="menu" aria-expanded="false">Mostrar índice de etapas ↓</button><p>CONTENIDO / EXPEDIENTE</p><div class="toc">
+<ul>
+<li><a href="#resumen">Resumen</a></li>
+<li><a href="#trace-01-y-02-intercept-001-y-la-imagen-del-tamesis">TRACE 01 y 02 — Intercept 001 y la imagen del Támesis</a></li>
+<li><a href="#trace-03-y-04-la-senal-de-audio-y-el-libro-de-mitnick">TRACE 03 y 04 — La señal de audio y el libro de Mitnick</a></li>
+<li><a href="#trace-05-y-06-paquetes-fantasma-y-vuelta-a-la-evidencia">TRACE 05 y 06 — Paquetes fantasma y vuelta a la evidencia</a></li>
+<li><a href="#trace-07-split-signal-linkedin-instagram">TRACE 07 — Split Signal: LinkedIn + Instagram</a></li>
+<li><a href="#trace-08-side-channel-la-sala-de-tryhackme">TRACE 08 — Side Channel: la sala de TryHackMe</a></li>
+<li><a href="#trace-09-y-10-la-pagina-que-olvido-y-el-nodo-final">TRACE 09 y 10 — La página que olvidó y el nodo final</a></li>
+<li><a href="#fragmentos-acumulativos">Fragmentos acumulativos</a></li>
+<li><a href="#lecciones-aprendidas-y-callejones-sin-salida">Lecciones aprendidas y callejones sin salida</a></li>
+<li><a href="#integridad-de-los-artefactos">Integridad de los artefactos</a></li>
+<li><a href="#fuentes">Fuentes</a></li>
+</ul>
+</div>
+
+
+
+</aside><article>
+<h2 id="resumen">Resumen</h2>
+<p>Las 10 etapas quedaron resueltas. La página final es <code>1b74e5175e672a5af64c7ea7808801e7.vercel.app</code>: es el MD5 de la clave <code>EVERY_ACTION_LEAVES_A_TRACE</code>, reconstruida con los 9 fragmentos Base64 repartidos por el reto.</p>
+<p>THE DEEP TRACE es un <em>cyber mystery hunt</em> de XSec Solutions, patrocinado por TryHackMe: 10 etapas encadenadas a lo largo de 10 días.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Nombre / URL</th>
+<th>Técnica principal</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>Intercept 001 (imagen)</td>
+<td>ROT47 → Base64 → Vigenère <code>NULL</code></td>
+<td>URL de la etapa 02</td>
+</tr>
+<tr>
+<td>02</td>
+<td><code>xsec-deep-trace-stage-1.vercel.app</code></td>
+<td>Hex → steghide</td>
+<td>contraseña <code>xsec</code> → URL de la 03</td>
+</tr>
+<tr>
+<td>03</td>
+<td><code>dead-frequency.vercel.app</code></td>
+<td>Morse en WAV</td>
+<td>ZIP <code>silenceisnotempty</code> → URL de la 04</td>
+</tr>
+<tr>
+<td>04</td>
+<td><code>unwritten-trace.vercel.app</code></td>
+<td>OSINT de libro</td>
+<td>ruta <code>/femtocell</code></td>
+</tr>
+<tr>
+<td>05</td>
+<td><code>unwritten-trace.vercel.app/femtocell</code></td>
+<td>Análisis de pcap</td>
+<td>clave <code>packetghost</code> → URL de la 06</td>
+</tr>
+<tr>
+<td>06</td>
+<td><code>return-to-evidence.vercel.app</code></td>
+<td>Reutilizar evidencia + medir imagen</td>
+<td>ruta <code>/1517</code></td>
+</tr>
+<tr>
+<td>07</td>
+<td><code>return-to-evidence.vercel.app/1517</code></td>
+<td>OSINT en LinkedIn e Instagram + XOR</td>
+<td><code>side-channel.vercel.app</code></td>
+</tr>
+<tr>
+<td>08</td>
+<td><code>side-channel.vercel.app</code></td>
+<td>Base64 → invertir → Vigenère + TryHackMe</td>
+<td><code>we-will-be-back-in-2027.vercel.app</code></td>
+</tr>
+<tr>
+<td>09</td>
+<td><code>we-will-be-back-in-2027.vercel.app</code></td>
+<td><code>robots.txt</code> + fecha oculta</td>
+<td><code>/records/20260912214733/</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>…/records/20260912214733/</code></td>
+<td>Reconstruir fragmentos + MD5</td>
+<td>página de finalización</td>
+</tr>
+</tbody>
+</table>
+<h3 id="como-reproducir-la-investigacion">Cómo reproducir la investigación</h3>
+<p>Cada etapa tiene dos posibles resultados: una pista para avanzar y una pieza del mensaje final. Conviene guardar ambos; una URL válida no garantiza que se haya recuperado el fragmento acumulativo.</p>
+<p>Los comandos siguientes están pensados para Linux/Kali, desde una carpeta de trabajo por etapa. Se utilizan <code>curl</code>, <code>7z</code>, <code>exiftool</code>, <code>steghide</code>, <code>tshark</code> y Python 3. Para visualizar el audio se puede usar Audacity. Los scripts auxiliares de esta página usan la biblioteca estándar de Python y se pueden descargar en un <a href="scripts/deep-trace-scripts.zip">paquete conjunto</a>.</p>
+<p>Las imágenes de evidencia técnica representan registros obtenidos de los archivos locales del reto: combinan salidas ejecutadas y fragmentos del código fuente. No son capturas históricas de Kali ni imágenes generadas para inventar resultados. Se puede leer cada registro como texto y consultar sus hashes de origen en el <a href="evidence/manifest.json">manifiesto de evidencias</a>.</p>
+<p>Las salidas se contrastaron con los artefactos descargados del reto. El fragmento 06 es una reconstrucción y se identifica como tal; las referencias a publicaciones externas conservan las limitaciones indicadas en su etapa.</p>
+<h2 id="trace-01-y-02-intercept-001-y-la-imagen-del-tamesis">TRACE 01 y 02 — Intercept 001 y la imagen del Támesis</h2>
+<p><strong>TRACE 01.</strong> La imagen inicial del canal de WhatsApp contiene una cadena de 60 caracteres firmada por "NULL". Se resuelve con tres capas: ROT47, después Base64 y por último Vigenère con la clave <code>NULL</code>. En Vigenère, la clave solo avanza con las letras; los demás caracteres se copian tal cual.</p>
+<pre><code class="language-text">5(d=*(*e{JhJ+wqH{)9H4v|E3&gt;}D4w&lt;E+v'F*)pE|$d?4&gt;IF4w&lt;F5(u9{Hll
+→ ROT47:    dW5lYWY6Ly9yZHBwLXhwcGMtbmNscHktZGVuYXAtMS5ncmxucHkudWFhLw==
+→ Base64:   uneaf://rdpp-xppc-nclpy-denap-1.grlnpy.uaa/
+→ Vigenère: https://xsec-deep-trace-stage-1.vercel.app/
+</code></pre>
+<p>Los scripts auxiliares disponibles se enlazan en el procedimiento de la etapa.</p>
+<h3 id="trace-01-de-la-cadena-a-la-direccion">TRACE 01 · De la cadena a la dirección</h3>
+<p><img alt="Evidencia técnica de TRACE 01" src="assets/evidence/trace01.png" /></p>
+<p><em>Reproducción del descifrado sobre la transcripción conservada; no es una captura del Intercept original. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace01.txt">Leer el registro en texto</a>.</p>
+<p><strong>Qué orienta el análisis.</strong> La firma <code>NULL</code> ofrece una posible clave, pero no demuestra por sí sola el orden de las capas. La cadena inicial contiene símbolos fuera del alfabeto Base64. ROT47 es una hipótesis que se puede comprobar: su salida pasa a tener un alfabeto Base64 válido y termina en <code>==</code>. Al decodificar, aparece una estructura parecida a una URL, aunque sus letras todavía están cifradas. Esa estructura permite comprobar la última transformación.</p>
+<p><strong>Cómo repetirlo.</strong> El <a href="scripts/decode_texts.py">script de transformaciones textuales</a> contiene la cadena transcrita y el descifrado Vigenère. Guarda el archivo en <code>scripts/</code> y ejecuta:</p>
+<pre><code class="language-sh">python3 scripts/decode_texts.py
+</code></pre>
+<p>La primera salida debe ser <code>TRACE 01 -&gt; https://xsec-deep-trace-stage-1.vercel.app/</code>. La misma utilidad reproduce también TRACE 07 y 08. En Vigenère se preservan <code>:</code>, <code>/</code>, <code>-</code>, los números y los puntos; estos caracteres no consumen posiciones de la clave. Si la clave avanza sobre toda la cadena, la URL queda mal descifrada.</p>
+<p><strong>Comprobación y cierre.</strong> El destino se identifica como el nodo 02 y ofrece el ZIP de evidencia. La cadena de entrada procede de la transcripción aportada; no se incluye una copia original verificable de Intercept 001 en este paquete. Aquí se obtiene un destino, no un fragmento acumulativo.</p>
+<p><strong>TRACE 02.</strong> La página ofrece <code>evidence_001.zip</code>, que contiene <code>thames_night.jpg</code>. Al pie aparece el fragmento hexadecimal <code>58 53 45 43</code>, que da <code>XSEC</code>.</p>
+<p><img alt="TRACE 02" src="assets/trace02.jpg" /></p>
+<p><img alt="thames_night.jpg" src="assets/thames-night.jpg" /></p>
+<ul>
+<li>Los metadatos EXIF, XMP y el comentario JPEG repiten <code>VEhFX0ZJTkF</code>: es el <strong>primer fragmento acumulativo</strong>, y por eso no decodifica limpio por sí solo.</li>
+<li>El GPS apunta a la estatua de Millicent Fawcett, en Parliament Square. No hizo falta aquí, pero la foto se vuelve a usar en TRACE 06.</li>
+<li><code>stegseek --seed</code> detecta un payload de steghide cifrado con Rijndael-128 CBC. RockYou no lo abre.</li>
+<li>La contraseña es <strong><code>xsec</code> en minúsculas</strong>. <code>XSEC</code> falla porque steghide distingue mayúsculas.</li>
+</ul>
+<pre><code class="language-sh">steghide extract -sf thames_night.jpg -p xsec -xf trace.txt
+cat trace.txt   # https://dead-frequency.vercel.app/
+</code></pre>
+<h3 id="trace-02-hexadecimal-metadatos-y-esteganografia">TRACE 02 · Hexadecimal, metadatos y esteganografía</h3>
+<p><img alt="Evidencia técnica de TRACE 02" src="assets/evidence/trace02.png" /></p>
+<p><em>Lectura real del comentario JPEG y del XMP de thames_night.jpg. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace02.txt">Leer el registro en texto</a>.</p>
+<p><strong>Evidencia que decide la contraseña.</strong> Los cuatro valores al pie de la página son bytes hexadecimales. No representan coordenadas ni un PIN:</p>
+<pre><code class="language-sh">python3 -c &quot;print(bytes.fromhex('58 53 45 43').decode('ascii'))&quot;
+# XSEC
+</code></pre>
+<p>Descarga y extrae el archivo, y examina los metadatos antes de modificar la fotografía:</p>
+<pre><code class="language-sh">curl -fL https://xsec-deep-trace-stage-1.vercel.app/evidence_001.zip -o evidence_001.zip
+7z x evidence_001.zip -ounsealed
+find unsealed -type f
+# Localiza thames_night.jpg y usa su ruta en los comandos siguientes.
+exiftool -a -u -g1 unsealed/evidence_001/thames_night.jpg
+</code></pre>
+<p>El ZIP revisado conserva el archivo en <code>evidence_001/thames_night.jpg</code>. La inspección recupera <code>VEhFX0ZJTkF</code> y datos GPS. Guarda el fragmento exactamente como aparece; su longitud de 11 caracteres explica por qué no debe tratarse como un mensaje Base64 independiente.</p>
+<p><strong>Por qué funciona la extracción.</strong> La pista produce <code>XSEC</code>; la variante en minúsculas <code>xsec</code> abre el contenido con steghide. La sensibilidad a mayúsculas se comprueba con el resultado, no se infiere del hexadecimal. Si ya existe <code>trace.txt</code>, utiliza otro nombre para no confundirlo con el <code>trace.txt</code> de TRACE 08.</p>
+<p><strong>Cierre.</strong> Destino: <code>dead-frequency.vercel.app</code>. Fragmento guardado: <code>VEhFX0ZJTkF</code>. La foto y sus metadatos siguen siendo relevantes más adelante; conserva el JPEG original sin recomprimirlo.</p>
+<h2 id="trace-03-y-04-la-senal-de-audio-y-el-libro-de-mitnick">TRACE 03 y 04 — La señal de audio y el libro de Mitnick</h2>
+<p><strong>TRACE 03</strong> (<code>dead-frequency.vercel.app</code>). Se descargan <code>transmission.wav</code> y un ZIP cifrado con AES.</p>
+<p><img alt="TRACE 03" src="assets/trace03.jpg" /></p>
+<ol>
+<li>El WAV es Morse con un tono de 700 Hz: puntos de 80 ms y rayas de 240 ms. Se lee <code>SILENCEISNOTEMPTY</code>.</li>
+<li>La pista <em>"Spaces were never part of the signal"</em> indica escribirlo sin espacios. Solo funciona en minúsculas: <code>silenceisnotempty</code>.</li>
+<li>Dentro del ZIP hay <code>unwritten_signal.wav</code>. Su espectrograma, entre 4 y 18 kHz, dibuja un <strong>QR de 29×29</strong> que lleva a <code>https://unwritten-trace.vercel.app</code>.</li>
+<li>El ZIP tiene 31 bytes después del End of Central Directory. Es un gzip que contiene el <strong>fragmento <code>MX1RSQUNFX1</code></strong>.</li>
+</ol>
+<p><img alt="Espectrograma calculado a partir del WAV original" src="assets/spectrogram-derived.png" /></p>
+<p><em>Espectrograma generado de nuevo a partir de <code>unwritten_signal.wav</code>. No es una captura de Audacity: muestra la señal real entre 4 y 18 kHz.</em></p>
+<pre><code class="language-sh">7z x -psilenceisnotempty recovered_archive.zip
+python3 scripts/extract_zip_tail.py recovered_archive.zip
+</code></pre>
+<p>El espectrograma se conserva como evidencia visual; el extractor automático del QR no está incluido.</p>
+<h3 id="trace-03-dos-mensajes-en-el-audio-y-otro-al-final-del-zip">TRACE 03 · Dos mensajes en el audio y otro al final del ZIP</h3>
+<p><img alt="Evidencia técnica de TRACE 03" src="assets/evidence/trace03.png" /></p>
+<p><em>Extracción del gzip posterior al EOCD y validación de la contraseña del ZIP AES. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace03.txt">Leer el registro en texto</a>.</p>
+<p><strong>Por qué medir los intervalos.</strong> La página dirige la atención a la repetición y al tiempo. En la grabación, las duraciones cortas y largas guardan aproximadamente la proporción 1:3, compatible con Morse. Estas son las letras de la lectura recuperada:</p>
+<pre><code class="language-text">... .. .-.. . -. -.-. . .. ... -. --- - . -- .--. - -.--
+ S   I   L  E  N   C  E  I  S  N   O   T E  M   P  T  Y
+</code></pre>
+<p>En Audacity, importa <code>transmission.wav</code>, amplía la forma de onda y mide varios pulsos: unos 0,08 s para puntos y 0,24 s para rayas. Separa las letras por las pausas más largas. La contraseña probada es <code>silenceisnotempty</code>, sin espacios.</p>
+<p><strong>El segundo audio exige otra representación.</strong> Tras abrir el ZIP, cambia <code>unwritten_signal.wav</code> a vista de espectrograma, con escala lineal y un rango que incluya 4–18 kHz. Ajusta el contraste hasta distinguir la cuadrícula y las tres marcas de posición del QR. Un espectrograma convierte frecuencia y tiempo en una imagen; escuchar el WAV no permite leer directamente esa figura. La investigación previa obtuvo <code>https://unwritten-trace.vercel.app</code> del QR; aquí se conserva un espectrograma recalculado, pero no un extractor automático del QR validado.</p>
+<p><strong>El fragmento adicional no está dentro de los archivos listados.</strong> El <a href="scripts/extract_zip_tail.py">extractor de la cola del ZIP</a> calcula el final del EOCD incluyendo la longitud del comentario ZIP; evita asumir que el cierre ocupa siempre solo 22 bytes:</p>
+<pre><code class="language-sh">python3 scripts/extract_zip_tail.py recovered_archive.zip
+# Bytes posteriores al EOCD: 31
+# MX1RSQUNFX1
+</code></pre>
+<p>Esos bytes forman un gzip. El hecho de que <code>7z</code> abra el archivo no obliga a que todo su contenido esté representado en el listado del ZIP.</p>
+<p><strong>Cierre.</strong> Contraseña: <code>silenceisnotempty</code>. Destino: <code>unwritten-trace.vercel.app</code>. Fragmento: <code>MX1RSQUNFX1</code>.</p>
+<p><strong>TRACE 04</strong> (<code>unwritten-trace.vercel.app</code>). Las pistas citan a Kevin Mitnick, su libro <em>The Art of Invisibility</em> y una advertencia sobre "una torre pequeña". En el libro, esa torre es la <strong>femtocell</strong>: una mini estación celular que, modificada, puede interceptar llamadas. La siguiente etapa está en la ruta <code>/femtocell</code>.</p>
+<p><img alt="TRACE 04" src="assets/trace04.jpg" /></p>
+<p>El <strong>fragmento <code>JFUVVJUkVTX</code></strong> aparece como comentario al final de <code>script.js</code>.</p>
+<h3 id="trace-04-convertir-una-referencia-bibliografica-en-una-ruta">TRACE 04 · Convertir una referencia bibliográfica en una ruta</h3>
+<p><img alt="Evidencia técnica de TRACE 04" src="assets/evidence/trace04.png" /></p>
+<p><em>Pistas del HTML y fragmento del JavaScript descargado. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace04.txt">Leer el registro en texto</a>.</p>
+<p><strong>Cómo acotar la búsqueda.</strong> El nombre de Mitnick identifica al autor. Las pistas descartan <em>The Art of Deception</em> y <em>The Art of Intrusion</em>, y otra nota nombra explícitamente <em>The Art of Invisibility</em>. El objetivo es un término técnico, no el título del libro ni una frase completa. La alusión a una torre pequeña orienta hacia una estación celular de corto alcance: <code>femtocell</code>.</p>
+<p>La relación con el libro pertenece al razonamiento de la investigación; no se dispone aquí de una página escaneada o de un número de página verificado. La comprobación reproducible es que la palabra, colocada como ruta, abre el nodo llamado <strong>RESIDUAL SIGNAL</strong>:</p>
+<pre><code class="language-sh">curl -fL https://unwritten-trace.vercel.app/femtocell -o trace05.html
+grep -n 'RESIDUAL SIGNAL' trace05.html
+curl -fL https://unwritten-trace.vercel.app/script.js -o trace04-script.js
+grep -n 'JFUVVJUkVTX' trace04-script.js
+</code></pre>
+<p>La última línea del JavaScript descargado contiene <code>// JFUVVJUkVTX</code>. El comentario no se ejecuta ni aparece en el texto visible, pero sí forma parte del recurso entregado al navegador.</p>
+<p><strong>Cierre.</strong> Ruta: <code>/femtocell</code>. Fragmento: <code>JFUVVJUkVTX</code>. La palabra funciona como ubicación del siguiente nodo, no como contraseña de un archivo.</p>
+<h2 id="trace-05-y-06-paquetes-fantasma-y-vuelta-a-la-evidencia">TRACE 05 y 06 — Paquetes fantasma y vuelta a la evidencia</h2>
+<p><strong>TRACE 05</strong> (<code>/femtocell</code>, "RESIDUAL SIGNAL"). Hay dos artefactos del mismo evento: un proceso Python dañado, <code>trace.py</code>, y una captura de red, <code>capture.pcap</code>. La pista: <em>"Two records. One event."</em></p>
+<p><img alt="TRACE 05" src="assets/trace05-clear.jpg" /></p>
+<ol>
+<li>En la captura, 16 paquetes UDP van al puerto 4444, con TTL 42 e IP ID del 1 al 16, pero desordenados en el archivo.</li>
+<li>Ordenados por IP ID, su byte de payload forma <code>cGFja2V0Z2hvc3Q=</code>, que en Base64 es <strong><code>packetghost</code></strong>.</li>
+<li><code>trace.py</code> contiene un señuelo, <code>ghostpacket</code>, y el nonce <code>NULLTRACE5</code>. El flujo de descifrado es SHA256(<code>packetghost|NULLTRACE5</code> + contador de 4 bytes), concatenando bloques. Con XOR sobre el bloque cifrado sale <code>https://return-to-evidence.vercel.app/</code>.</li>
+<li>El <strong>fragmento <code>0VWRVJZX0ZS</code></strong> está en un comentario CSS: <code>/* 0VWRVJZX0ZS */</code>.</li>
+</ol>
+<pre><code class="language-sh">tshark -r capture.pcap -Y 'udp.dstport == 4444 &amp;&amp; ip.ttl == 42' \
+  -T fields -E separator=, -e ip.id -e udp.payload \
+  | python3 scripts/decode_pcap.py
+</code></pre>
+<p>Los scripts auxiliares disponibles se enlazan en el procedimiento de la etapa.</p>
+<h3 id="trace-05-restaurar-el-orden-y-usar-la-clave-externa">TRACE 05 · Restaurar el orden y usar la clave externa</h3>
+<p><img alt="Evidencia técnica de TRACE 05" src="assets/evidence/trace05.png" /></p>
+<p><em>Lectura del PCAP original, orden de los paquetes y descifrado con packetghost. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace05.txt">Leer el registro en texto</a>.</p>
+<p><strong>Qué aporta cada artefacto.</strong> El proceso contiene <code>_FALSE = "ghostpacket"</code> y una rama marcada como señuelo. Su función de descifrado recibe un parámetro <code>external</code>: el programa no proporciona por sí solo la clave correcta. La captura aporta esa pieza. Entre el tráfico, el conjunto seleccionado tiene destino UDP 4444, TTL 42 e identificadores IP 1–16; cada payload contiene un byte. Esta combinación produce una secuencia comprobable al ordenar, no solo una selección que parece interesante.</p>
+<pre><code class="language-sh">curl -fL https://unwritten-trace.vercel.app/femtocell/capture.pcap -o capture.pcap
+curl -fL https://unwritten-trace.vercel.app/femtocell/trace.py -o trace.py
+tshark -r capture.pcap -Y 'udp.dstport == 4444 &amp;&amp; ip.ttl == 42' \
+  -T fields -E separator=, -e ip.id -e udp.payload
+</code></pre>
+<p>Los identificadores pueden imprimirse en hexadecimal. El <a href="scripts/decode_pcap.py">decodificador de paquetes</a> los convierte a números antes de ordenar: un orden lexicográfico o <code>sort -n</code> sobre valores <code>0x…</code> puede mezclar la secuencia. Repite el comando anterior canalizando su salida al script, como en el bloque de esta etapa.</p>
+<pre><code class="language-text">Paquetes: 16
+Base64: cGFja2V0Z2hvc3Q=
+Clave: packetghost
+</code></pre>
+<p><strong>Muestra de la evidencia de red.</strong> Los primeros cuatro paquetes que cumplen el filtro aparecen así en el PCAP examinado:</p>
+<table>
+<thead>
+<tr>
+<th>Posición entre los paquetes filtrados</th>
+<th style="text-align: right;">IP ID</th>
+<th>Payload hexadecimal</th>
+<th>Carácter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align: right;">9</td>
+<td><code>5a</code></td>
+<td><code>Z</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">10</td>
+<td><code>32</code></td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align: right;">4</td>
+<td><code>6a</code></td>
+<td><code>j</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td style="text-align: right;">5</td>
+<td><code>61</code></td>
+<td><code>a</code></td>
+</tr>
+</tbody>
+</table>
+<p>El comienzo leído en orden de captura es <code>Z2ja</code>; el mensaje empieza por <code>cGFj</code> después de ordenar por IP ID. Esta diferencia muestra por qué importa reconstruir el orden antes de decodificar.</p>
+<p><strong>De la clave al texto claro.</strong> <code>_pick()</code> selecciona el segundo registro, índice 1. El programa añade el nonce <code>NULLTRACE5</code>, permuta los bytes con <code>_twist()</code> y los empaqueta en Base85. <code>_unlock()</code> deshace Base85 y la permutación antes de separar nonce y cuerpo. Por eso el registro cifrado seleccionado se puede descifrar directamente con el mismo flujo SHA256, sin reproducir el empaquetado.</p>
+<p>El <a href="scripts/unlock_trace05.py">script de descifrado del registro</a> lee <code>_R</code> sin ejecutar el proceso recuperado y aplica la fórmula documentada:</p>
+<pre><code class="language-sh">python3 scripts/unlock_trace05.py trace.py packetghost
+# Registro seleccionado: 1
+# Nonce: NULLTRACE5
+# https://return-to-evidence.vercel.app/
+curl -fL https://unwritten-trace.vercel.app/femtocell/styles.css -o trace05-styles.css
+grep -n '0VWRVJZX0ZS' trace05-styles.css
+</code></pre>
+<p><strong>Cierre.</strong> Clave externa: <code>packetghost</code>. Destino: <code>return-to-evidence.vercel.app</code>. Fragmento: <code>0VWRVJZX0ZS</code>. <code>ghostpacket</code> es una constante del señuelo y no sustituye a la clave recuperada de los paquetes.</p>
+<p><strong>TRACE 06</strong> ("RETURN TO EVIDENCE"). La página pide volver atrás: <em>"One of the earliest artifacts… carried more than it appeared to"</em>, <em>"Location is also data"</em> y <em>"When the image returns, measure it"</em>.</p>
+<p><img alt="TRACE 06" src="assets/trace06.jpg" /></p>
+<p><img alt="Detalle del archivo recuperado de TRACE 06" src="assets/trace06-notes.jpg" /></p>
+<p><em>Las notas conectan tres operaciones: volver a una evidencia anterior, identificar su ubicación y medir la imagen que devuelve el archivo.</em></p>
+<ol>
+<li>La contraseña de <code>recovered_location.zip</code> es el edificio de <code>thames_night.jpg</code>: <strong><code>Palace of Westminster</code></strong>.</li>
+<li>Dentro está <code>evidence_returned.jpg</code>, un recorte del Big Ben de <strong>37×41 píxeles</strong>.</li>
+<li>El comentario HTML dice <code>Make sure you multiplied the numbers you got</code>: 37 × 41 = <strong>1517</strong>, y la siguiente etapa está en <code>/1517</code>.</li>
+</ol>
+<p><img alt="evidence_returned.jpg ampliada" src="assets/evidence-returned.png" /></p>
+<p><img alt="Elizabeth Tower y Westminster, fotografía de referencia" src="assets/westminster-reference.webp" /></p>
+<p><em>Fotografía de referencia: CubicPioneer, <a href="https://commons.wikimedia.org/wiki/File:Elizabeth_Tower_and_Palace_of_Westminster_from_the_River_Thames.jpg">Wikimedia Commons</a>, CC0. Esta imagen ilustra el edificio; no sustituye al JPEG original del reto ni contiene sus pistas.</em></p>
+<pre><code class="language-sh">7z x '-pPalace of Westminster' recovered_location.zip
+exiftool -ImageWidth -ImageHeight recovered_location/evidence_returned.jpg
+</code></pre>
+<p><strong>Avanzar y recuperar un fragmento son objetivos diferentes.</strong> La ruta <code>/1517</code> confirma que las dimensiones resolvieron el salto al nodo 07; no demuestra que se haya localizado toda la evidencia de TRACE 06. Los 37 × 41 corresponden al JPEG extraído, no a la fotografía original. La ampliación de la imagen solo facilita verla y no cambia sus dimensiones.</p>
+<p>En esta etapa no apareció fragmento: ni en HTML, JS o CSS, ni en el ZIP o la imagen. Se reconstruyó más tarde (ver Fragmentos acumulativos).</p>
+<h3 id="trace-06-reabrir-la-evidencia-y-medir-el-archivo-correcto">TRACE 06 · Reabrir la evidencia y medir el archivo correcto</h3>
+<p><img alt="Evidencia técnica de TRACE 06" src="assets/evidence/trace06.png" /></p>
+<p><em>ZIP abierto, dimensiones del JPEG extraído y comentario HTML que indica multiplicarlas. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace06.txt">Leer el registro en texto</a>.</p>
+<p><strong>La pista conecta archivos de distintas etapas.</strong> La referencia a un artefacto temprano y a la ubicación invita a revisar <code>thames_night.jpg</code>, guardado en TRACE 02. Su escena permite proponer el Palacio de Westminster. La frase exacta <code>Palace of Westminster</code>, con sus espacios y mayúsculas, se valida al abrir el ZIP; la identificación visual por sí sola no prueba una contraseña.</p>
+<pre><code class="language-sh">curl -fL https://return-to-evidence.vercel.app/recovered_location.zip -o recovered_location.zip
+7z t '-pPalace of Westminster' recovered_location.zip
+7z x '-pPalace of Westminster' recovered_location.zip -ounsealed
+exiftool -ImageWidth -ImageHeight unsealed/recovered_location/evidence_returned.jpg
+# Image Width : 37
+# Image Height: 41
+curl -fL https://return-to-evidence.vercel.app/ -o trace06.html
+grep -n 'multiplied' trace06.html
+</code></pre>
+<p>El HTML contiene <code>&lt;!-- Make sure you multiplied the numbers you got--&gt;</code>. Esa instrucción relaciona los números de la imagen con una operación concreta:</p>
+<pre><code class="language-sh">python3 -c 'print(37 * 41)'
+# 1517
+curl -fL https://return-to-evidence.vercel.app/1517 -o trace07.html
+grep -n 'SPLIT SIGNAL' trace07.html
+</code></pre>
+<p><strong>Qué quedó pendiente.</strong> La apertura del ZIP y la llegada a SPLIT SIGNAL prueban el avance. Las búsquedas de la investigación no localizaron el fragmento 06. En las comprobaciones aportadas, no había bytes tras el EOCD del ZIP ni tras el último EOI del JPEG, y steghide no extrajo datos con las contraseñas probadas. Estos resultados descartan esas pruebas concretas; no demuestran que la imagen carezca de cualquier contenido oculto.</p>
+<p><strong>Cierre.</strong> Contraseña del ZIP: <code>Palace of Westminster</code>. Dimensiones originales: 37 × 41. Ruta: <code>/1517</code>. Fragmento 06: <strong>no recuperado de una fuente original; deducido posteriormente</strong>.</p>
+<h2 id="trace-07-split-signal-linkedin-instagram">TRACE 07 — Split Signal: LinkedIn + Instagram</h2>
+<p>La URL de TRACE 08 estaba partida en dos publicaciones de XSec Solutions, cifradas con XOR y la clave <code>publicshadow</code>. Las pistas: <em>"One was meant to be read. One was meant to be seen"</em>, <em>"Same source. Different channels"</em> y <em>"Public does not mean obvious"</em>.</p>
+<p><img alt="TRACE 07" src="assets/trace07.jpg" /></p>
+<ul>
+<li><strong>El fragmento acumulativo <code>FWT1FVkVSWV</code></strong> está en un párrafo con texto negro sobre fondo oscuro, junto a la indicación <em>"Select All"</em>.</li>
+<li><strong>LinkedIn ("para leer"):</strong> <code>ET0wXAorPl4tHVYNESIwACU0PQc4M1oC</code></li>
+<li><strong>Instagram ("para ver"):</strong> el hashtag <code>#KiIVGQ0OJRE4VjkEPBgkGwogS1U=</code> en el post "2 DAYS LEFT"; la fecha de edición no está verificada en los artefactos adjuntos.</li>
+</ul>
+<p><strong>Cómo se obtuvo la clave (texto conocido).</strong> La cadena de LinkedIn decodifica a 24 bytes binarios. Al probar palabras de las pistas como clave XOR, <code>public</code> dio <code>aHR0cHN…</code>, que se parece al Base64 de <code>https</code>. Si la dirección esperada empieza por <code>https://</code>, cuyo Base64 es <code>aHR0cHM6Ly9</code>. Al hacer XOR del texto cifrado con ese inicio aparece la clave: <code>publicshado…</code>, es decir, <code>publicshadow</code>.</p>
+<pre><code class="language-sh">python3 - &lt;&lt;'E'
+import base64
+k = b'publicshadow'
+for c in ['ET0wXAorPl4tHVYNESIwACU0PQc4M1oC', 'KiIVGQ0OJRE4VjkEPBgkGwogS1U=']:
+    b = base64.b64decode(c)
+    print(base64.b64decode(bytes(x ^ k[i % 12] for i, x in enumerate(b))))
+E
+# b'https://side-chann'  +  b'el.vercel.app/'
+</code></pre>
+<p><img alt="Cartel de Instagram de la publicación 2 DAYS LEFT" src="assets/instagram-poster-original.jpg" /></p>
+<p><em>El cartel identifica la publicación. La cadena cifrada estaba en el caption como hashtag, por lo que había que revisar también el texto del post.</em></p>
+<p>En orden, LinkedIn y luego Instagram forman <code>https://side-channel.vercel.app/</code>.</p>
+<h3 id="trace-07-separar-el-enlace-partido-del-mensaje-acumulativo">TRACE 07 · Separar el enlace partido del mensaje acumulativo</h3>
+<p><img alt="Evidencia técnica de TRACE 07" src="assets/evidence/trace07.png" /></p>
+<p><em>Dos decodificaciones Base64 con XOR intermedio y evidencia del texto negro en el HTML. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace07.txt">Leer el registro en texto</a>.</p>
+<p><strong>Hay dos clases de fragmentos.</strong> Los dos textos publicados en redes completan la URL de TRACE 08. El texto negro del HTML aporta otra pieza, <code>FWT1FVkVSWV</code>, destinada al mensaje final. No se deben intercambiar ni contar como el mismo hallazgo.</p>
+<p>La expresión «para ver» orientó la búsqueda hacia Instagram, pero el hallazgo documentado fue un <strong>hashtag del caption</strong>, no una cadena recuperada de los píxeles del cartel. El póster identifica la publicación; no prueba por sí solo el texto del caption.</p>
+<p><strong>Las capas exactas son Base64 → XOR → Base64.</strong> La primera decodificación produce bytes binarios. XOR con la clave repetida <code>publicshadow</code> devuelve otra cadena Base64; hay que decodificarla una segunda vez. El bloque de esta etapa muestra las dos cadenas de entrada y las salidas parciales. Unirlas en el orden inverso produce una dirección inválida.</p>
+<p>Para conservar la pieza del HTML sin depender del contraste del monitor:</p>
+<pre><code class="language-sh">curl -fL https://return-to-evidence.vercel.app/1517 -o trace07.html
+grep -n -B 2 -A 2 'FWT1FVkVSWV' trace07.html
+</code></pre>
+<p>La evidencia descargada muestra <code>&lt;p style="color: black;"&gt;</code> alrededor del fragmento, junto a la indicación <code>Select All</code>. Las cadenas de redes están transcritas en este writeup; no se adjunta una exportación completa de ambas publicaciones que permita verificar sus fechas o historial de edición.</p>
+<p><strong>Cierre.</strong> LinkedIn: <code>https://side-chann</code>. Instagram: <code>el.vercel.app/</code>. Destino unido: <code>https://side-channel.vercel.app/</code>. Fragmento acumulativo independiente: <code>FWT1FVkVSWV</code>.</p>
+<h2 id="trace-08-side-channel-la-sala-de-tryhackme">TRACE 08 — Side Channel: la sala de TryHackMe</h2>
+<p>La dirección de TRACE 09 sale de la flag de una encuesta de TryHackMe: <code>THM{we_will_be_back_in_2025}</code> da <strong><code>we-will-be-back-in-2027.vercel.app</code></strong>. La primera flag que probamos era correcta en TryHackMe, pero no era la que llevaba a la siguiente etapa.</p>
+<p><img alt="TRACE 08" src="assets/trace08.jpg" /></p>
+<p><strong>El intercept.</strong> Las pistas indican tres capas: <em>"The outer layer is only packaging"</em> (Base64), <em>"The second layer reads the wrong way"</em> (invertir) y <em>"NULL still signs his work"</em> (Vigenère <code>NULL</code>).</p>
+<pre><code class="language-text">TkZQRksgUk9UTSA0MjAyIEVQTVNQIFFaIE5BUEdYTg==
+→ Base64:    NFPFK ROTM 4202 EPMSP QZ NAPGXN
+→ invertir:  NXGPAN ZQ PSMPE 2024 MTOR KFPFN
+→ Vigenère:  ADVENT OF CYBER 2024 SIDE QUEST
+</code></pre>
+<p><strong>Las instrucciones para la dirección:</strong></p>
+<ul>
+<li><em>"A flag has an outside and an inside. Only one of them belongs in an address."</em> Se quita <code>THM{…}</code>.</li>
+<li><em>"The message remembers 2025. The next trace does not. Move the year two steps forward."</em> 2025 pasa a 2027.</li>
+</ul>
+<p><strong>El callejón sin salida.</strong> La sala <em>Advent of Cyber '24 Side Quest</em> tiene una Task 9, "The End?", con una encuesta. Su flag, <code>THM{bigger_and_maybe_not_as_mean_in_2025}</code>, la acepta TryHackMe. Pero <code>bigger-and-maybe-not-as-mean-in-2027.vercel.app</code> no existe. Se probaron más de 300 variantes, todas con 404:</p>
+<ul>
+<li>separadores y mayúsculas;</li>
+<li>otros años;</li>
+<li>otros servicios de hosting;</li>
+<li>rutas dentro de los dominios del reto;</li>
+<li>salas de TryHackMe con ese nombre.</li>
+</ul>
+<p><img alt="Respuesta aceptada en la Task 9 de TryHackMe" src="assets/thm-accepted.png" /></p>
+<p><em>Una respuesta aceptada confirma la tarea de TryHackMe, pero no que esa misma cadena produzca el siguiente dominio del concurso.</em></p>
+<p><strong>La solución.</strong> Un writeup público del Side Quest da otra flag de encuesta: <code>THM{we_will_be_back_in_2025}</code>, según la investigación previa; su procedencia exacta está pendiente de reconfirmación. <em>"We will be back in 2025"</em> es literalmente "el mensaje que recuerda 2025".</p>
+<pre><code class="language-text">THM{we_will_be_back_in_2025} → we_will_be_back_in_2025 → we-will-be-back-in-2027
+→ https://we-will-be-back-in-2027.vercel.app/
+</code></pre>
+<p>El <strong>fragmento <code>9BQ1RJT05f</code></strong> está en <code>side-channel.vercel.app/trace.txt</code>. La página lo carga en segundo plano desde <code>script.js</code> con un <code>fetch()</code>, sin mostrarlo.</p>
+<h3 id="trace-08-comprobar-cada-capa-y-cuestionar-la-flag-de-partida">TRACE 08 · Comprobar cada capa y cuestionar la flag de partida</h3>
+<p><img alt="Evidencia técnica de TRACE 08" src="assets/evidence/trace08.png" /></p>
+<p><em>Transformaciones del intercept y recurso trace.txt observado en el JavaScript. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace08.txt">Leer el registro en texto</a>.</p>
+<p><strong>El intercept identifica una sala, no un dominio.</strong> Primero se decodifica Base64, después se invierte la cadena completa, incluidos espacios y cifras, y finalmente se descifran las letras con Vigenère. Así, <code>4202</code> pasa a <code>2024</code> antes de aplicar <code>NULL</code>. La salida del script textual debe ser:</p>
+<pre><code class="language-text">TRACE 08 -&gt; ADVENT OF CYBER 2024 SIDE QUEST
+</code></pre>
+<p><strong>La flag requiere una comprobación separada.</strong> La captura de TryHackMe demuestra que <code>THM{bigger_and_maybe_not_as_mean_in_2025}</code> fue aceptada en Task 9. No demuestra que produzca el dominio del concurso. El recorrido que llegó al nodo 09 utilizó <code>THM{we_will_be_back_in_2025}</code>: retirar el envoltorio, adelantar el año dos posiciones y normalizar los separadores da el dominio publicado. La regla de reemplazar guiones bajos por guiones queda validada por el destino alcanzado; no se presenta aquí como una cita literal del reto.</p>
+<p>La procedencia exacta de esa segunda flag sigue pendiente de reconfirmación. Es una limitación del paso entre la sala y el dominio, aunque las transformaciones del intercept y la existencia del nodo siguiente sí se pueden reproducir. No hace falta presentar como requisito resolver todos los laboratorios del Side Quest: este expediente no documenta esa resolución completa.</p>
+<p><strong>El fragmento se obtiene de un recurso adicional.</strong> En el JavaScript observado aparece <code>fetch(`trace.txt?cache=${Date.now()}`)</code>; el resultado no se inserta en el documento visible:</p>
+<pre><code class="language-sh">curl -fL https://side-channel.vercel.app/trace.txt
+# 9BQ1RJT05f
+curl -fL https://we-will-be-back-in-2027.vercel.app/ -o trace09.html
+grep -n 'THE PAGE THAT FORGOT' trace09.html
+</code></pre>
+<p><strong>Cierre.</strong> Sala indicada: Advent of Cyber 2024 Side Quest. Destino alcanzado: <code>we-will-be-back-in-2027.vercel.app</code>. Fragmento: <code>9BQ1RJT05f</code>. Procedencia de la flag utilizada: pendiente de reconfirmación.</p>
+<h2 id="trace-09-y-10-la-pagina-que-olvido-y-el-nodo-final">TRACE 09 y 10 — La página que olvidó y el nodo final</h2>
+<p><strong>TRACE 09</strong> ("THE PAGE THAT FORGOT"). La página dice <em>"What you are looking for is not in this version"</em> y <em>"Some pages are written for visitors. Others are noticed only by things that crawl"</em>.</p>
+<p><img alt="TRACE 09" src="assets/trace09.jpg" /></p>
+<ol>
+<li>Lo que rastrea las webs son los buscadores, y lo que leen primero es <code>robots.txt</code>. Contiene <code>Disallow: /records/</code>.</li>
+<li><code>/records/</code> explica: <em>"Preserved versions are stored beneath the moment they were captured. /records/&lt;timestamp&gt;/"</em>.</li>
+<li>El timestamp está escrito con palabras en la historia de NULL:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Texto de la historia</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"the year twenty twenty-six"</td>
+<td>2026</td>
+</tr>
+<tr>
+<td>"the ninth month"</td>
+<td>09</td>
+</tr>
+<tr>
+<td>"On the twelfth night"</td>
+<td>12</td>
+</tr>
+<tr>
+<td>"twenty-one lights"</td>
+<td>21 (hora)</td>
+</tr>
+<tr>
+<td>"Forty-seven minutes later"</td>
+<td>47 (minutos)</td>
+</tr>
+<tr>
+<td>"Thirty-three seconds passed"</td>
+<td>33 (segundos)</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Regla de almacenamiento de versiones históricas" src="assets/records-rule.jpg" /></p>
+<p>La historia aporta los valores; esta página explica cómo convertirlos en una ruta. Se concatenan como <code>YYYYMMDDhhmmss</code>, con dos dígitos para mes, día, hora, minuto y segundo. No se realiza una conversión de zona horaria.</p>
+<p>Resultado: <code>https://we-will-be-back-in-2027.vercel.app/records/20260912214733/</code></p>
+<h3 id="trace-09-extraer-el-momento-de-captura-sin-adivinar-rutas">TRACE 09 · Extraer el momento de captura sin adivinar rutas</h3>
+<p><img alt="Evidencia técnica de TRACE 09" src="assets/evidence/trace09.png" /></p>
+<p><em>Directiva de robots.txt y valores comprobados en la historia del HTML. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace09.txt">Leer el registro en texto</a>.</p>
+<p><strong>Por qué <code>robots.txt</code>.</strong> La alusión a quienes rastrean páginas apunta a un recurso que contiene directivas para crawlers. <code>Disallow</code> indica una ruta; no es una contraseña ni una barrera técnica de acceso. Se consulta el recurso público sugerido por la pista:</p>
+<pre><code class="language-sh">curl -fL https://we-will-be-back-in-2027.vercel.app/robots.txt
+# User-agent: *
+# Disallow: /records/
+curl -fL https://we-will-be-back-in-2027.vercel.app/records/
+</code></pre>
+<p>La página de <code>records</code> proporciona la plantilla y la historia aporta los seis valores de la tabla. El orden de aparición permite construir <code>2026</code> + <code>09</code> + <code>12</code> + <code>21</code> + <code>47</code> + <code>33</code>. No se suma «47 minutos» a otra hora: en la solución estos valores se leen como componentes del identificador de captura.</p>
+<pre><code class="language-sh">curl -fL https://we-will-be-back-in-2027.vercel.app/records/20260912214733/ -o trace10.html
+grep -n -E 'FINAL NODE|TEVBVkVTX0|residue://10' trace10.html
+</code></pre>
+<p><strong>Qué cambia entre versiones.</strong> La página actual se titula THE PAGE THAT FORGOT y conserva la historia. La ruta archivada se identifica como FINAL NODE, TRACE 10, y contiene los dos comentarios que cierran el mensaje. Es un archivo publicado por el propio reto bajo <code>records</code>; no se utilizó Wayback Machine para encontrarlo.</p>
+<p><strong>Cierre.</strong> Timestamp: <code>20260912214733</code>. Destino: <code>/records/20260912214733/</code>. La pieza atribuida a TRACE 09, <code>TEVBVkVTX0</code>, se recupera en ese documento; no aparece en la versión actual examinada.</p>
+<p><strong>TRACE 10</strong> ("FINAL NODE"). La página esconde los dos últimos fragmentos en comentarios HTML: <code>&lt;!--TEVBVkVTX0 --&gt;</code> y <code>&lt;!-- residue://10 FfVFJBQ0U= --&gt;</code>. Las pistas dicen:</p>
+<p><img alt="TRACE 10" src="assets/trace10-clear.jpg" /></p>
+<ul>
+<li>No leer los fragmentos por separado.</li>
+<li>El orden es el del recorrido.</li>
+<li>La clave descodificada no es el destino: <em>"Keys leave fingerprints too"</em> y <em>"Encode the final key into md5"</em>.</li>
+<li><em>"Let those 32 marks stand before .vercel.app"</em>: el MD5 tiene 32 caracteres.</li>
+</ul>
+<pre><code class="language-sh"># Clave: la parte tras KEY= del mensaje reconstruido
+echo -n 'EVERY_ACTION_LEAVES_A_TRACE' | md5sum
+# 1b74e5175e672a5af64c7ea7808801e7
+</code></pre>
+<p>Página final: <code>https://1b74e5175e672a5af64c7ea7808801e7.vercel.app/</code>, con el título "DEEP TRACE // Completed" y el formulario oficial de ganador. El MD5 del mensaje completo no existe como dominio; solo funciona el de la clave.</p>
+<p><img alt="Página de finalización" src="assets/completed.jpg" /></p>
+<h3 id="trace-10-reconstruir-antes-de-calcular-la-huella">TRACE 10 · Reconstruir antes de calcular la huella</h3>
+<p><img alt="Evidencia técnica de TRACE 10" src="assets/evidence/trace10.png" /></p>
+<p><em>Comentarios del nodo final y ejecución del script que reconstruye la clave y calcula su MD5. Presentación gráfica de un registro reproducido, no captura histórica de una terminal.</em></p>
+<p><a href="evidence/trace10.txt">Leer el registro en texto</a>.</p>
+<p><strong>La evidencia está en el código fuente.</strong> El mismo documento contiene <code>&lt;!--TEVBVkVTX0 --&gt;</code> junto al relato y <code>&lt;!-- residue://10 FfVFJBQ0U= --&gt;</code> cerca del inicio. La posición física de los comentarios no determina su orden: el writeup utiliza el recorrido de las etapas y la marca <code>residue://10</code> para situar la última pieza.</p>
+<p>La secuencia conservada contiene nueve fragmentos, correspondientes a TRACE 02–10. Una pista de la página habla de «nine pieces» anteriores y una adicional; ese conteo literal no coincide con las nueve piezas utilizadas aquí. Se conserva la discrepancia en vez de inventar un fragmento para completarla. La secuencia y la clave mostradas sí llevan a la página de finalización.</p>
+<p><strong>Cómo repetir la reconstrucción.</strong> Descarga el <a href="scripts/solve_fragments.py">script de fragmentos</a>, que incluye explícitamente la pieza 06 deducida:</p>
+<pre><code class="language-sh">python3 scripts/solve_fragments.py
+# Fragmento 06: reconstruido; procedencia sin confirmar.
+# THE_FINAL_TRACE_REQUIRES_EVERY_FRAGMENT_KEY=EVERY_ACTION_LEAVES_A_TRACE
+# https://1b74e5175e672a5af64c7ea7808801e7.vercel.app/
+</code></pre>
+<p>Concatena primero y decodifica después. El <code>=</code> de padding corresponde al final de toda la cadena; añadir padding a cada pieza puede ocultar un error de alineación. Del mensaje decodificado se toma únicamente lo que sigue a <code>KEY=</code>. Para calcular la huella en Linux:</p>
+<pre><code class="language-sh">printf '%s' 'EVERY_ACTION_LEAVES_A_TRACE' | md5sum
+# 1b74e5175e672a5af64c7ea7808801e7
+</code></pre>
+<p><code>printf '%s'</code> no añade salto de línea. Cambiar mayúsculas, incluir comillas en los bytes o hashear el mensaje completo produce otra huella. MD5 es aquí la transformación indicada por el acertijo; no se necesita romper el hash ni buscar colisiones.</p>
+<p><strong>Cierre.</strong> La URL resultante abre una página titulada DEEP TRACE // Completed. Ese resultado confirma la clave utilizada, pero no localiza ni autentica de forma independiente el fragmento 06 que quedó reconstruido. El formulario de finalización pertenece al flujo del concurso y no se completa como parte de esta reproducción.</p>
+<h2 id="fragmentos-acumulativos">Fragmentos acumulativos</h2>
+<p>Los 9 fragmentos, concatenados en orden y decodificados juntos, forman <code>THE_FINAL_TRACE_REQUIRES_EVERY_FRAGMENT_KEY=EVERY_ACTION_LEAVES_A_TRACE</code>. Por separado no se pueden leer: cada corte cae en mitad de un grupo Base64.</p>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Fragmento</th>
+<th>Dónde estaba</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>02</td>
+<td><code>VEhFX0ZJTkF</code></td>
+<td>EXIF, XMP y comentario de <code>thames_night.jpg</code></td>
+</tr>
+<tr>
+<td>03</td>
+<td><code>MX1RSQUNFX1</code></td>
+<td>gzip tras el EOCD de <code>recovered_archive.zip</code></td>
+</tr>
+<tr>
+<td>04</td>
+<td><code>JFUVVJUkVTX</code></td>
+<td>comentario <code>//</code> en <code>script.js</code></td>
+</tr>
+<tr>
+<td>05</td>
+<td><code>0VWRVJZX0ZS</code></td>
+<td>comentario <code>/* */</code> en <code>styles.css</code></td>
+</tr>
+<tr>
+<td>06</td>
+<td><code>QUdNRU5UX0t</code></td>
+<td>reconstruido (no encontrado)</td>
+</tr>
+<tr>
+<td>07</td>
+<td><code>FWT1FVkVSWV</code></td>
+<td>texto negro sobre negro en <code>/1517</code></td>
+</tr>
+<tr>
+<td>08</td>
+<td><code>9BQ1RJT05f</code></td>
+<td><code>side-channel.vercel.app/trace.txt</code></td>
+</tr>
+<tr>
+<td>09</td>
+<td><code>TEVBVkVTX0</code></td>
+<td>comentario HTML en <code>/records/20260912214733/</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>FfVFJBQ0U=</code></td>
+<td>comentario <code>residue://10</code> en la misma página</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-sh">python3 -c &quot;import base64;print(base64.b64decode('VEhFX0ZJTkFMX1RSQUNFX1JFUVVJUkVTX0VWRVJZX0ZSQUdNRU5UX0tFWT1FVkVSWV9BQ1RJT05fTEVBVkVTX0FfVFJBQ0U='))&quot;
+</code></pre>
+<p><strong>Cómo se reconstruyó el fragmento 06.</strong> Base64 convierte cada 3 bytes en 4 caracteres, así que solo se lee bien cuando los cortes caen en su sitio.</p>
+<ul>
+<li>Los fragmentos 02 a 05 suman 44 caracteres y dan <code>THE_FINAL_TRACE_REQUIRES_EVERY_FR</code>.</li>
+<li>Los fragmentos 07 y 08 solo se leen bien desplazados 3 caracteres, como <code>…Y=EVERY_ACTION_</code>.</li>
+<li>Para que encajen, entre ambos falta exactamente un fragmento de 11 caracteres. Debe codificar 8 letras más 2 bits, y esos bits obligan a que la letra siguiente sea una <code>E</code>.</li>
+<li>La reconstrucción semántica utilizada es <code>FR</code> + <code>AGMENT_K</code> + <code>EY=</code>, que en Base64 es <code>QUdNRU5UX0t</code>.</li>
+</ul>
+<p>El MD5 confirma la clave final, pero no valida de forma independiente el fragmento 06: se calcula únicamente sobre la parte posterior a <code>KEY=</code>. El fragmento sigue siendo una reconstrucción sin fuente original localizada.</p>
+<h2 id="lecciones-aprendidas-y-callejones-sin-salida">Lecciones aprendidas y callejones sin salida</h2>
+<p>Lo que más tiempo costó no fue técnico: fue dar por buena la primera flag del Stage 8 sin cuestionarla.</p>
+<table>
+<thead>
+<tr>
+<th>Callejón</th>
+<th>Por qué falló</th>
+<th>Lección</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>XSEC</code> como contraseña de steghide</td>
+<td>Steghide distingue mayúsculas; era <code>xsec</code></td>
+<td>Prueba siempre las variantes de mayúsculas de una pista</td>
+</tr>
+<tr>
+<td>RockYou y diccionarios con CeWL en TRACE 02</td>
+<td>La clave estaba en la propia página</td>
+<td>En un reto encadenado, deriva la clave de las pistas antes de usar fuerza bruta</td>
+</tr>
+<tr>
+<td>Buscar el fragmento 06 en cada archivo</td>
+<td>No se localizó en los archivos examinados</td>
+<td>La estructura del Base64 permite deducir lo que falta</td>
+</tr>
+<tr>
+<td><code>bigger_and_maybe_not_as_mean_in_2027</code></td>
+<td>Respuesta aceptada en THM; procedencia de la segunda flag pendiente de confirmar</td>
+<td>Si 300 variantes fallan, revisa la suposición, no el formato</td>
+</tr>
+<tr>
+<td>Pensar que el Stage 9 no estaba publicado</td>
+<td>Otros participantes ya habían llegado</td>
+<td>Usa los datos de los organizadores para descartar hipótesis</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Técnicas reutilizables:</strong></p>
+<ul>
+<li><strong>Texto conocido contra XOR:</strong> si sabes cómo empieza el mensaje (<code>https://</code> → <code>aHR0cHM6Ly9</code>), sacas la clave.</li>
+<li><strong>Alineación de Base64:</strong> revela si dos trozos son contiguos y cuánto falta entre ellos.</li>
+<li><strong>Revisar todo lo que carga una página:</strong> <code>robots.txt</code>, el JS (<code>fetch</code> ocultos), comentarios HTML y CSS, texto del mismo color que el fondo y estilos sin uso.</li>
+<li><strong>Datos tras el final de un archivo:</strong> bytes después del EOCD de un ZIP o del EOI de un JPEG.</li>
+<li><strong>Espectrogramas:</strong> un audio puede contener una imagen, como un QR.</li>
+<li><strong>Ordenar paquetes por un campo de cabecera:</strong> el IP ID devolvió el orden real del mensaje.</li>
+</ul>
+<h2 id="integridad-de-los-artefactos">Integridad de los artefactos</h2>
+<p>Estos SHA256 identifican los archivos examinados para esta edición. Permiten comparar una descarga o copia local; no sustituyen la comprobación de su origen. El hash del JPEG corresponde al original, no a su ampliación para la web.</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th style="text-align: right;">Bytes</th>
+<th>SHA256</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>thames_night.jpg</code></td>
+<td style="text-align: right;">606478</td>
+<td><code>dd17c7f47ca8bf317d99d87a13107889dedc0a5564f2a957b2449e8a05ff3f83</code></td>
+</tr>
+<tr>
+<td><code>transmission.wav</code></td>
+<td style="text-align: right;">1205330</td>
+<td><code>440123404f237152eaf6ac5fdabba1f325fca4d5abffaec31184905b0de531f6</code></td>
+</tr>
+<tr>
+<td><code>recovered_archive.zip</code></td>
+<td style="text-align: right;">280756</td>
+<td><code>c046c001dd9bacd5dcf7b1a43b0deefadb05b973af3047fbf675774d8ab712a9</code></td>
+</tr>
+<tr>
+<td><code>capture.pcap</code></td>
+<td style="text-align: right;">7974</td>
+<td><code>4214dd6ae38e3b9d63392042e80849e5255b4a6f04b0f4d00703fe73315d32c9</code></td>
+</tr>
+<tr>
+<td><code>trace.py</code></td>
+<td style="text-align: right;">2713</td>
+<td><code>a8fa5dacaedf4693a08979098bb5c80d7e2a16a551649d771673df138309354d</code></td>
+</tr>
+<tr>
+<td><code>recovered_location.zip</code></td>
+<td style="text-align: right;">3141</td>
+<td><code>a0a41641b5861ad16d02941b42649045ac1d47dd5b3e939e27b25f45bb88a52b</code></td>
+</tr>
+<tr>
+<td><code>evidence_returned.jpg</code></td>
+<td style="text-align: right;">7132</td>
+<td><code>f4c405418c3ef00288ea053d813633031078270500a9cf569221fb4275526585</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-sh">sha256sum thames_night.jpg transmission.wav recovered_archive.zip capture.pcap trace.py recovered_location.zip
+</code></pre>
+<h2 id="fuentes">Fuentes</h2>
+<ul>
+<li><a href="https://tryhackme.com/room/adventofcyber24sidequest">TryHackMe — Advent of Cyber '24 Side Quest</a></li>
+<li><a href="https://motasem-notes.net/tryhackme-advent-of-cyber-2024-side-quest/">motasem-notes.net — TryHackMe Advent of Cyber '24 Side Quest</a>, fuente atribuida en el original a <code>THM{we_will_be_back_in_2025}</code>; pasaje exacto pendiente de reconfirmación</li>
+<li><a href="https://books.google.com/books/about/The_Art_of_Invisibility.html?id=nBBeDAAAQBAJ">Kevin Mitnick — The Art of Invisibility (Google Books)</a></li>
+</ul></article></main><footer><div class="signature"><span>INVESTIGACIÓN Y WRITEUP</span><strong>Nightmar3</strong><p>Every action leaves a trace.</p></div><div>THE DEEP TRACE · XSEC 2026</div></footer><dialog aria-label="Imagen ampliada"><button>Cerrar ✕</button><img alt=""></dialog><script>
+document.querySelectorAll('pre').forEach(p=>{const b=document.createElement('button');b.className='copy';b.textContent='Copiar';b.setAttribute('aria-label','Copiar bloque de código');b.onclick=async()=>{try{await navigator.clipboard.writeText(p.querySelector('code').textContent);b.textContent='Copiado';setTimeout(()=>b.textContent='Copiar',1800)}catch{b.textContent='Selecciona el código'}};p.prepend(b)});
+const dlg=document.querySelector('dialog'),photo=dlg.querySelector('img');document.querySelectorAll('article img').forEach(im=>{im.tabIndex=0;im.setAttribute('role','button');const show=()=>{photo.src=im.src;photo.alt=im.alt;dlg.showModal()};im.onclick=show;im.onkeydown=e=>{if(e.key==='Enter')show()}});dlg.querySelector('button').onclick=()=>dlg.close();dlg.onclick=e=>{if(e.target===dlg)dlg.close()};document.querySelector('.menu').onclick=e=>{const t=document.querySelector('.toc');t.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',t.classList.contains('open'))};const links=[...document.querySelectorAll('aside a')];const heads=[...document.querySelectorAll('article h2')];function update(){const range=document.documentElement.scrollHeight-innerHeight;document.querySelector('#progress').style.width=(range>0?100*scrollY/range:0)+'%';let current=heads[0];heads.forEach(h=>{if(h.getBoundingClientRect().top<180)current=h});links.forEach(a=>a.classList.toggle('active',current&&a.hash==='#'+current.id))}addEventListener('scroll',update,{passive:true});update();
+</script></body></html>

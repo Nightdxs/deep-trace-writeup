@@ -1,0 +1,14 @@
+$ Python / pyzipper + Pillow · extraer y medir el JPEG
+$ Python · leer el comentario del HTML
+
+ZIP validado con: Palace of Westminster
+Archivo: recovered_location/evidence_returned.jpg
+Image Width : 37
+Image Height: 41
+
+HTML / instrucción recuperada:
+<!-- Make sure you multiplied the numbers you got-->
+
+37 × 41 = 1517
+Ruta resultante: /1517
+Fragmento 06: NO recuperado; deducido después.

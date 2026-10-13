@@ -1,0 +1,9 @@
+$ python3 · lectura de JPEG Comment y XMP con Pillow
+
+Hexadecimal: 58 53 45 43
+ASCII: XSEC
+
+Archivo: thames_night.jpg
+JPEG Comment: VEhFX0ZJTkF
+XMP:
+<rdf:li xml:lang='x-default'>VEhFX0ZJTkF</rdf:li>

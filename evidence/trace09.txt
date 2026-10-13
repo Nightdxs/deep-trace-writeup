@@ -1,0 +1,16 @@
+$ Python · leer robots.txt y comprobar las frases del HTML
+
+robots.txt:
+User-agent: *
+Disallow: /records/
+
+Historia / componentes:
+the year twenty twenty-six     → 2026
+the ninth month                → 09
+On the twelfth night           → 12
+twenty-one lights              → 21
+Forty-seven minutes later      → 47
+Thirty-three seconds passed    → 33
+
+Timestamp: 20260912214733
+Ruta: /records/20260912214733/

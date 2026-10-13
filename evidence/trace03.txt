@@ -1,0 +1,9 @@
+$ python3 scripts/extract_zip_tail.py recovered_archive.zip
+$ Python / pyzipper · validar contraseña y leer el WAV
+
+Bytes posteriores al EOCD: 31
+MX1RSQUNFX1
+
+ZIP AES abierto con: silenceisnotempty
+Archivo: recovered_archive/unwritten_signal.wav
+Bytes recuperados: 1399370

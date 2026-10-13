@@ -1,0 +1,8 @@
+$ Python · buscar pistas en TRACE 04 y el comentario en script.js
+
+script.js / comentario recuperado:
+24: // JFUVVJUkVTX
+
+HTML / pistas:
+The word belongs to <em>The Art of Invisibility</em>.
+If you find the right one, place it where a path should be.

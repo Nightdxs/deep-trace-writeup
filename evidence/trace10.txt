@@ -1,0 +1,10 @@
+$ Python · inspeccionar comentarios
+$ python3 scripts/solve_fragments.py
+
+Comentarios en el HTML:
+<!-- residue://10 FfVFJBQ0U= -->
+<!--TEVBVkVTX0 -->
+
+Fragmento 06: reconstruido; procedencia sin confirmar.
+THE_FINAL_TRACE_REQUIRES_EVERY_FRAGMENT_KEY=EVERY_ACTION_LEAVES_A_TRACE
+https://1b74e5175e672a5af64c7ea7808801e7.vercel.app/

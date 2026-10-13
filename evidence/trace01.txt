@@ -1,0 +1,7 @@
+$ python3 scripts/decode_texts.py
+
+TRACE 01 -> https://xsec-deep-trace-stage-1.vercel.app/
+
+Entrada: transcripción de Intercept 001 incluida en el script.
+Clave Vigenère: NULL.
+La imagen inicial original no está disponible en este paquete.
